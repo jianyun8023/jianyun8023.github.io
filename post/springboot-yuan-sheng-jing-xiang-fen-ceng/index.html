@@ -1,0 +1,384 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SpringBoot 原生镜像分层 | 唐长老日志</title>
+<link rel="shortcut icon" href="https://www.jianyun.run/favicon.ico?v=1695085083564">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.jianyun.run/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="SpringBoot 原生镜像分层 | 唐长老日志 - Atom Feed" href="https://www.jianyun.run/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VT7WKBTJZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VT7WKBTJZZ');
+</script>
+
+
+    <meta name="description" content="让编译、推拉镜像进入秒级
+
+SpringBoot提供分层能力，支持构建分层的镜像，分层自下向上分四层
+
+release版本依赖
+快照版依赖
+spring loader
+项目编译后文件
+基于分层后的镜像，可以让编译、推拉镜像进入秒级，日常的编..." />
+    <meta name="keywords" content="java,springboot,docker" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://www.jianyun.run">
+  <img class="avatar" src="https://www.jianyun.run/images/avatar.png?v=1695085083564" alt="">
+  </a>
+  <h1 class="site-title">
+    唐长老日志
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/jianyun8023" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              SpringBoot 原生镜像分层
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-09-19
+              </span>
+              <span>
+                5 min read
+              </span>
+              
+                <a href="https://www.jianyun.run/tag/qSLBNK5zo/" class="post-tag">
+                  # java
+                </a>
+              
+                <a href="https://www.jianyun.run/tag/eEL8LH4WDg/" class="post-tag">
+                  # springboot
+                </a>
+              
+                <a href="https://www.jianyun.run/tag/PMAGW5BFie/" class="post-tag">
+                  # docker
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://object.16661888.xyz/images/2023/09/Nh0E9O.png" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>让<strong>编译、推拉镜像进入秒级</strong></p>
+<!-- more -->
+<p><strong>SpringBoot提供分层能力</strong>，支持构建分层的镜像，分层自下向上分四层</p>
+<ul>
+<li>release版本依赖</li>
+<li>快照版依赖</li>
+<li>spring loader</li>
+<li>项目编译后文件<br>
+基于分层后的镜像，可以让<strong>编译、推拉镜像进入秒级</strong>，日常的编译后文件只有kb或者5M内大小</li>
+</ul>
+<h2 id="实践">实践</h2>
+<h3 id="1-springboot生成分层元信息">1. springboot生成分层元信息</h3>
+<blockquote>
+<p>Springboot 2.4 版本及后layers默认打开</p>
+</blockquote>
+<p>springboot插件的配置打开分层参数 <code>layers=true</code></p>
+<pre><code class="language-xml">            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.3.8.RELEASE&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;!-- 启用分层打包支持 --&gt;
+                    &lt;layers&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt;
+                    &lt;/layers&gt;
+                &lt;/configuration&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;repackage&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+</code></pre>
+<p>开启分层后，springboot会在fat jar中生成layers.idx元信息<br>
+layers.idx内容示例：</p>
+<pre><code>  - &quot;dependencies&quot;:
+    - &quot;BOOT-INF/lib/dependency1.jar&quot;
+    - &quot;BOOT-INF/lib/dependency2.jar&quot;
+  - &quot;spring-boot-loader&quot;:
+    - &quot;org/&quot;
+  - &quot;snapshot-dependencies&quot;:
+    - &quot;BOOT-INF/lib/dependency3-SNAPSHOT.jar&quot;
+    - &quot;BOOT-INF/lib/dependency4-SNAPSHOT.jar&quot;    
+  - &quot;application&quot;:
+    - &quot;BOOT-INF/classes/&quot;
+    - &quot;META-INF/&quot;
+</code></pre>
+<h3 id="2-拆包和打镜像">2. 拆包和打镜像</h3>
+<p>spingboot提供了拆包的命令，把springboot fat jar 拆包到extract目录<br>
+示例命令 <code>java -Djarmode=layertools -jar app.jar extract</code><br>
+执行后可以在extract中获得如下的目录</p>
+<ul>
+<li>dependencies    release版本依赖</li>
+<li>snapshot-dependencies   快照版依赖</li>
+<li>spring-boot-loader</li>
+<li>application   项目编译后文件</li>
+</ul>
+<p>简化打包的dockerfile，第一个镜像用于执行拆包，第二个构建启动镜像</p>
+<pre><code class="language-dockerfile"># 分层构建, 加速增量构建
+
+FROM openjdk:8 as builder
+
+WORKDIR app
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+RUN java -Djarmode=layertools -jar app.jar extract &amp;&amp; rm app.jar
+
+FROM openjdk:8
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone
+ENV JAVA_OPTS=&quot; -server -Xmx1024m -Xms256m -Xmn512m -Xss256k&quot;
+
+WORKDIR app
+
+COPY --from=builder /app/dependencies/ ./
+COPY --from=builder /app/spring-boot-loader/ ./
+COPY --from=builder /app/snapshot-dependencies/ ./
+COPY --from=builder /app/application/ ./
+
+EXPOSE 9081
+
+ENTRYPOINT [&quot;sh&quot;, &quot;-c&quot;, &quot;java $JAVA_OPTS org.springframework.boot.loader.JarLauncher&quot;]
+</code></pre>
+<h3 id="3-集成mvn-docker插件">3. 集成mvn docker插件</h3>
+<blockquote>
+<p>请先配置好docker的私有仓库、推拉</p>
+</blockquote>
+<p>在mvn中可以增加docker插件，可以简化镜像的构建。</p>
+<ul>
+<li>配置<code>&lt;dockerFileDir&gt;${project.basedir}&lt;/dockerFileDir&gt;</code> 表示dockerfile文件在当前模块的根，和pom.xml平级。</li>
+</ul>
+<p>示例</p>
+<pre><code class="language-xml">&lt;properties&gt;
+        &lt;docker.plugin.version&gt;0.43.4&lt;/docker.plugin.version&gt;
+        &lt;docker.registry&gt;example.docker.com&lt;/docker.registry&gt;
+        &lt;docker.namespace&gt;example-dev&lt;/docker.namespace&gt;
+    &lt;/properties&gt;
+ &lt;build&gt;
+        &lt;plugins&gt;	
+        &lt;plugin&gt;
+                &lt;groupId&gt;io.fabric8&lt;/groupId&gt;
+                &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${docker.plugin.version}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;!-- Docker Remote Api--&gt;
+                    &lt;!-- 本机则可以注释掉, 如果没有监听2375端口 --&gt;
+&lt;!--                    &lt;dockerHost&gt;${docker.host}&lt;/dockerHost&gt;--&gt;
+                    &lt;!-- Docker 镜像私服--&gt;
+                    &lt;registry&gt;${docker.registry}&lt;/registry&gt;
+
+                    &lt;images&gt;
+                        &lt;image&gt;
+                            &lt;name&gt;${docker.registry}/${docker.namespace}/${project.name}:${project.version}&lt;/name&gt;
+                            &lt;build&gt;
+                                &lt;dockerFileDir&gt;${project.basedir}&lt;/dockerFileDir&gt;
+                            &lt;/build&gt;
+                        &lt;/image&gt;
+                    &lt;/images&gt;
+                &lt;/configuration&gt;
+				&lt;!-- build-image 把构建镜像绑定到了install流程，如果不需要可以把这块配置删除--&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;build-image&lt;/id&gt;
+                        &lt;phase&gt;install&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;build&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+</code></pre>
+<p>然后就可以使用下面命令打包和构建镜像了</p>
+<pre><code class="language-bash"># 编译jar包, 构建镜像和推送
+mvn clean install docker:build docker:push 
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<ol>
+<li><a href="https://spring.io/blog/2020/08/14/creating-efficient-docker-images-with-spring-boot-2-3">Creating Efficient Docker Images with Spring Boot 2.3</a></li>
+<li><a href="https://www.cnblogs.com/cnscud/p/15168085.html">Spring Boot使用Docker分层打包</a></li>
+<li><a href="https://github.com/fabric8io/docker-maven-plugin">docker-maven-plugin</a></li>
+</ol>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%AE%9E%E8%B7%B5">实践</a>
+<ul>
+<li><a href="#1-springboot%E7%94%9F%E6%88%90%E5%88%86%E5%B1%82%E5%85%83%E4%BF%A1%E6%81%AF">1. springboot生成分层元信息</a></li>
+<li><a href="#2-%E6%8B%86%E5%8C%85%E5%92%8C%E6%89%93%E9%95%9C%E5%83%8F">2. 拆包和打镜像</a></li>
+<li><a href="#3-%E9%9B%86%E6%88%90mvn-docker%E6%8F%92%E4%BB%B6">3. 集成mvn docker插件</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3">参考文档</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://www.jianyun.run/post/gitea-zai-synology-de-shi-jian/">
+              <h3 class="post-title">
+                gitea在Synology的实践
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '84c0d2776760d53c4984',
+    clientSecret: '0a4a31263e310dfcf6286402055b027a05d11553',
+    repo: 'jianyun8023',
+    owner: 'jianyun8023',
+    admin: ['jianyun8023'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://www.jianyun.run/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

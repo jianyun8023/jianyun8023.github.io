@@ -1,0 +1,247 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ffmpeg几个简单用法 | 唐长老日志</title>
+<link rel="shortcut icon" href="https://www.jianyun.run/favicon.ico?v=1695085083564">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.jianyun.run/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="ffmpeg几个简单用法 | 唐长老日志 - Atom Feed" href="https://www.jianyun.run/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VT7WKBTJZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VT7WKBTJZZ');
+</script>
+
+
+    <meta name="description" content="ffmpeg
+安装
+brew install ffmpeg
+
+提取字幕
+ffmpeg -i '/Download/Superman.and.Lois.S01E12.1080p.AMZN.WEB-DL.DDP5.1.H.264-NTb.mkv..." />
+    <meta name="keywords" content="ffmpeg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://www.jianyun.run">
+  <img class="avatar" src="https://www.jianyun.run/images/avatar.png?v=1695085083564" alt="">
+  </a>
+  <h1 class="site-title">
+    唐长老日志
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/jianyun8023" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              ffmpeg几个简单用法
+            </h2>
+            <div class="post-info">
+              <span>
+                2022-02-07
+              </span>
+              <span>
+                1 min read
+              </span>
+              
+                <a href="https://www.jianyun.run/tag/X0pH_Goxt/" class="post-tag">
+                  # ffmpeg
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://www.jianyun.run/post-images/ffmpeg-ji-ge-jian-dan-yong-fa.png" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="ffmpeg">ffmpeg</h1>
+<h2 id="安装">安装</h2>
+<pre><code class="language-bash">brew install ffmpeg
+</code></pre>
+<h2 id="提取字幕">提取字幕</h2>
+<pre><code class="language-bash">ffmpeg -i '/Download/Superman.and.Lois.S01E12.1080p.AMZN.WEB-DL.DDP5.1.H.264-NTb.mkv' -map 0:s:0 sub1.srt
+</code></pre>
+<h2 id="视频拼合">视频拼合</h2>
+<ul>
+<li>创建视频清单  filelist.txt</li>
+</ul>
+<pre><code class="language-bash">file 'new1.mov'
+file 'new2.mov'
+file 'new3.mov'
+</code></pre>
+<ul>
+<li>合并视频</li>
+</ul>
+<pre><code class="language-bash">ffmpeg -f concat -i filelist.txt -c copy output.mov
+</code></pre>
+<h2 id="mov-转-mp4">mov 转 mp4</h2>
+<pre><code class="language-bash">ffmpeg -i output.mov -vcodec h264 -acodec mp2 newvodeo.mp4
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#ffmpeg">ffmpeg</a>
+<ul>
+<li><a href="#%E5%AE%89%E8%A3%85">安装</a></li>
+<li><a href="#%E6%8F%90%E5%8F%96%E5%AD%97%E5%B9%95">提取字幕</a></li>
+<li><a href="#%E8%A7%86%E9%A2%91%E6%8B%BC%E5%90%88">视频拼合</a></li>
+<li><a href="#mov-%E8%BD%AC-mp4">mov 转 mp4</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://www.jianyun.run/post/macos-command/">
+              <h3 class="post-title">
+                macOS Command
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '84c0d2776760d53c4984',
+    clientSecret: '0a4a31263e310dfcf6286402055b027a05d11553',
+    repo: 'jianyun8023',
+    owner: 'jianyun8023',
+    admin: ['jianyun8023'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://www.jianyun.run/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,276 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>rpc常见设计结构 | 唐长老日志</title>
+<link rel="shortcut icon" href="https://www.jianyun.run/favicon.ico?v=1695085083564">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.jianyun.run/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="rpc常见设计结构 | 唐长老日志 - Atom Feed" href="https://www.jianyun.run/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VT7WKBTJZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VT7WKBTJZZ');
+</script>
+
+
+    <meta name="description" content="rpc常见设计结构
+
+消息体定义
+
+二进制
+压缩二进制
+文本
+json
+
+
+消息传输方式
+
+阻塞式
+帧
+内存
+文件
+
+
+服务器处理模型
+
+BIO
+NIO
+AIO
+
+
+
+
+Thrift架构
+
+
+..." />
+    <meta name="keywords" content="rpc" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://www.jianyun.run">
+  <img class="avatar" src="https://www.jianyun.run/images/avatar.png?v=1695085083564" alt="">
+  </a>
+  <h1 class="site-title">
+    唐长老日志
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/jianyun8023" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              rpc常见设计结构
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-03-01
+              </span>
+              <span>
+                1 min read
+              </span>
+              
+                <a href="https://www.jianyun.run/tag/Q2B9PEwlJ/" class="post-tag">
+                  # rpc
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://www.jianyun.run/post-images/rpc-chang-jian-she-ji-jie-gou.png" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h2 id="rpc常见设计结构">rpc常见设计结构</h2>
+<ul>
+<li>消息体定义
+<ul>
+<li>二进制</li>
+<li>压缩二进制</li>
+<li>文本</li>
+<li>json</li>
+</ul>
+</li>
+<li>消息传输方式
+<ul>
+<li>阻塞式</li>
+<li>帧</li>
+<li>内存</li>
+<li>文件</li>
+</ul>
+</li>
+<li>服务器处理模型
+<ul>
+<li>BIO</li>
+<li>NIO</li>
+<li>AIO</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Thrift架构<br>
+<img src="https://object.16661888.xyz/images/2023/02/WWsT91.jpg" alt="Thrift架构图" loading="lazy"></p>
+</blockquote>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#rpc%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1%E7%BB%93%E6%9E%84">rpc常见设计结构</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://www.jianyun.run/post/ning-dun-ling-pai-zhuan-biao-zhun-2fa-totp/">
+              <h3 class="post-title">
+                宁盾令牌转标准2FA TOTP
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '84c0d2776760d53c4984',
+    clientSecret: '0a4a31263e310dfcf6286402055b027a05d11553',
+    repo: 'jianyun8023',
+    owner: 'jianyun8023',
+    admin: ['jianyun8023'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://www.jianyun.run/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

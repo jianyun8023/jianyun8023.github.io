@@ -1,0 +1,288 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>宁盾令牌转标准2FA TOTP | 唐长老日志</title>
+<link rel="shortcut icon" href="https://www.jianyun.run/favicon.ico?v=1695085083564">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.jianyun.run/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="宁盾令牌转标准2FA TOTP | 唐长老日志 - Atom Feed" href="https://www.jianyun.run/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VT7WKBTJZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VT7WKBTJZZ');
+</script>
+
+
+    <meta name="description" content="
+作为一个强迫症，我希望我能用统一的APP管理我的一次性密码，而公司提供的宁盾一次性验证码，却只能用宁盾令牌管理。不能使用统一管理工具管理，这让强迫症怎么办，还需要多下载一个APP。经过我的研究，发现宁盾是使用标准TOTP算法生成一次性密码..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://www.jianyun.run">
+  <img class="avatar" src="https://www.jianyun.run/images/avatar.png?v=1695085083564" alt="">
+  </a>
+  <h1 class="site-title">
+    唐长老日志
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/jianyun8023" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              宁盾令牌转标准2FA TOTP
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-03-01
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://www.jianyun.run/post-images/ning-dun-ling-pai-zhuan-biao-zhun-2fa-totp.png" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <blockquote>
+<p>作为一个强迫症，我希望我能用统一的APP管理我的一次性密码，而公司提供的宁盾一次性验证码，却只能用宁盾令牌管理。不能使用统一管理工具管理，这让强迫症怎么办，还需要多下载一个APP。经过我的研究，发现宁盾是使用标准TOTP算法生成一次性密码的，现在把它提供的种子密钥加工成符合otpauth规范的地址就可以由其它应用管理了。</p>
+</blockquote>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="https://object.16661888.xyz/images/2022/08/2KxON6.jpg" alt="2211583406022_.pic_hd-w387" loading="lazy"></figure>
+<h2 id="获取宁盾二维码内容">获取宁盾二维码内容</h2>
+<p>绑定宁盾令牌时，解码这个二维码，获得文本</p>
+<pre><code>http://mtc.ndkey.com/mtc/appDownload/index.html#eyJ2ZXJzaW9uIjoxLCJzZXJ2aWNlSWQiOiJzZXJ2aWNlSWQiLCJjb21wYW55TmFtZSI6IuWFrOWPuOWQjSIsImFjdGl2YXRpb25NZXRob2QiOjEsImV4cGlyZVRpbWUiOjE1MTExMTY5NjQzNDUsInRva2VuIjp7InNlcmlhbCI6IjEyMzQ1NiIsInNlZWQiOiI0ODY1NmM2YzZmMjFkZWFkYmVlZiIsInRpbWVTdGVwIjo2MCwicGFzc3dvcmRMZW5ndGgiOjYsImV4cGlyZVRpbWUiOjIyMTE0NTIxNjEwMDB9fQ
+</code></pre>
+<p>这个文本是一个url，获取这个url中#后的部分，将这部分使用base64解码。如果不能解码，在后面追加一个<code>=</code></p>
+<pre><code>eyJ2ZXJzaW9uIjoxLCJzZXJ2aWNlSWQiOiJzZXJ2aWNlSWQiLCJjb21wYW55TmFtZSI6IuWFrOWPuOWQjSIsImFjdGl2YXRpb25NZXRob2QiOjEsImV4cGlyZVRpbWUiOjE1MTExMTY5NjQzNDUsInRva2VuIjp7InNlcmlhbCI6IjEyMzQ1NiIsInNlZWQiOiI0ODY1NmM2YzZmMjFkZWFkYmVlZiIsInRpbWVTdGVwIjo2MCwicGFzc3dvcmRMZW5ndGgiOjYsImV4cGlyZVRpbWUiOjIyMTE0NTIxNjEwMDB9fQ
+</code></pre>
+<p>解码后可以得到一个json串，如下</p>
+<pre><code>{
+  &quot;version&quot;: 1,
+  &quot;serviceId&quot;: &quot;serviceId&quot;,
+  &quot;companyName&quot;: &quot;公司名&quot;,
+  &quot;activationMethod&quot;: 1,
+  &quot;expireTime&quot;: 1511116964345,
+  &quot;token&quot;: {
+    &quot;serial&quot;: &quot;123456&quot;,
+    &quot;seed&quot;: &quot;48656c6c6f21deadbeef&quot;,
+    &quot;timeStep&quot;: 60,
+    &quot;passwordLength&quot;: 6,
+    &quot;expireTime&quot;: 2211452161000
+  }
+}
+</code></pre>
+<p>重要字段说明：</p>
+<p><code>token.seed</code> 用于生成一次性密码的key<br>
+<code>token.timeStep</code> 一次性密码的有效期，单位秒<br>
+<code>token.passwordLength</code> 密码长度<br>
+这几个字段再后面会用到</p>
+<h2 id="生成secret">生成secret</h2>
+<p>seed是一个hex string格式的种子，需要处理成secret才能使用</p>
+<p>先将seed由hex string解密binary，再进行base32加密，得到的值就是secret</p>
+<p>使用shell处理</p>
+<pre><code class="language-bash">echo '48656c6c6f21deadbeef' |xxd -r -p | base32
+</code></pre>
+<p>使用java处理</p>
+<pre><code class="language-java">//cn.hutool:hutool-core:4.6.6
+String secret = Base32.encode(HexUtil.decodeHex(&quot;48656c6c6f21deadbeef&quot;));
+</code></pre>
+<h2 id="生成otpauth-url">生成otpauth url</h2>
+<p>栗子</p>
+<pre><code class="language-url">otpauth://totp/$用户名?secret=$secret]&amp;issuer=$公司&amp;algorithm=SHA1&amp;digits=6&amp;period=60
+</code></pre>
+<p><code>$用户名</code>处可以替换成你的账户名<br>
+<code>$secret</code> 替换为上一步得到的值<br>
+<code>$公司</code> 替换为公司名<br>
+<code>algorithm</code> 不需要动，默认用SHA1算法<br>
+<code>digits</code> 密码长度，替换为上文中的<code>token.passwordLength</code><br>
+<code>period</code> 一次性密码有效期，替换为上文中的<code>token.timeStep</code></p>
+<p>得到的最终url可以直接粘贴到谷歌令牌、微软令牌、1Password等软件使用。也可以生成二维码扫描</p>
+<h2 id="终极命令">终极命令</h2>
+<p><code>/tmp/abc</code>是二维码获取到的文本</p>
+<pre><code class="language-bash">cat /tmp/abc \
+  | awk -F# '{printf &quot;%s=&quot;,$2}' \
+  | base64 -d \
+  | jq .token.seed -r \
+  | xxd -r -p \
+  | base32 \
+  | awk '{printf &quot;otpauth://totp/[用户名]?secret=%s&amp;issuer=[公司]&amp;algorithm=SHA1&amp;digits=6&amp;period=60&quot;,$1}' \
+  | qrencode -o - \
+  | open -f -a Preview
+</code></pre>
+<h2 id="参考文档">参考文档</h2>
+<ul>
+<li><a href="https://tools.ietf.org/html/rfc6238">TOTP: Time-Based One-Time Password Algorithm</a></li>
+<li><a href="https://github.com/google/google-authenticator/wiki/Key-Uri-Format">Key Uri Format</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E8%8E%B7%E5%8F%96%E5%AE%81%E7%9B%BE%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%86%85%E5%AE%B9">获取宁盾二维码内容</a></li>
+<li><a href="#%E7%94%9F%E6%88%90secret">生成secret</a></li>
+<li><a href="#%E7%94%9F%E6%88%90otpauth-url">生成otpauth url</a></li>
+<li><a href="#%E7%BB%88%E6%9E%81%E5%91%BD%E4%BB%A4">终极命令</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3">参考文档</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://www.jianyun.run/post/zheng-ze-biao-da-shi-ji-chu-dao-gao-jie-yu-fa/">
+              <h3 class="post-title">
+                正则表达式基础到高阶（语法）
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '84c0d2776760d53c4984',
+    clientSecret: '0a4a31263e310dfcf6286402055b027a05d11553',
+    repo: 'jianyun8023',
+    owner: 'jianyun8023',
+    admin: ['jianyun8023'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://www.jianyun.run/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

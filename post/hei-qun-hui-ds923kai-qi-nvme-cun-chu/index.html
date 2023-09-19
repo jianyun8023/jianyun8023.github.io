@@ -1,0 +1,261 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>黑群晖DS923+开启nvme存储 | 唐长老日志</title>
+<link rel="shortcut icon" href="https://www.jianyun.run/favicon.ico?v=1695085083564">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.jianyun.run/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="黑群晖DS923+开启nvme存储 | 唐长老日志 - Atom Feed" href="https://www.jianyun.run/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VT7WKBTJZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VT7WKBTJZZ');
+</script>
+
+
+    <meta name="description" content="文件信息
+版本：DS923+ 7.1.1 42962 update 4
+修改文件： /lib64/libhwcontrol.so.1
+原始sha1:  ecd958868934ea1f8c15858eba8b981169505b0a
+用he..." />
+    <meta name="keywords" content="nas,群晖" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://www.jianyun.run">
+  <img class="avatar" src="https://www.jianyun.run/images/avatar.png?v=1695085083564" alt="">
+  </a>
+  <h1 class="site-title">
+    唐长老日志
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/jianyun8023" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              黑群晖DS923+开启nvme存储
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-04-03
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://www.jianyun.run/tag/dvY0nsSpV/" class="post-tag">
+                  # nas
+                </a>
+              
+                <a href="https://www.jianyun.run/tag/whoNI_vV5p/" class="post-tag">
+                  # 群晖
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://object.16661888.xyz/images/2023/04/pxXVzm.png" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h2 id="文件信息">文件信息</h2>
+<p>版本：DS923+ 7.1.1 42962 update 4<br>
+修改文件： /lib64/libhwcontrol.so.1<br>
+原始sha1:  ecd958868934ea1f8c15858eba8b981169505b0a</p>
+<p>用hex编辑器进行下面替换。<br>
+macOS可以使用 Hex Fiend工具</p>
+<pre><code>search : 1EFA803E00B8010000007520
+replace: 1EFA803E00B8010000009090
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://object.16661888.xyz/images/2023/04/UDZvQQ.png" alt="示例" loading="lazy"></figure>
+<p>然后执行下面命令</p>
+<pre><code class="language-bash">sudo -i
+echo &quot;2C396: 9090&quot; | xxd -r - /usr/lib/libhwcontrol.so.1
+chmod 644 /usr/lib/libhwcontrol.so.1
+</code></pre>
+<p>重启机器后即可设置nvme硬盘作为存储<br>
+<img src="https://object.16661888.xyz/images/2023/04/pxXVzm.png" alt="效果" loading="lazy"></p>
+<hr>
+<h2 id="纯享版命令">纯享版命令</h2>
+<p>直接使用下列 linux命令即可完成文件修改</p>
+<pre><code class="language-bash">cd /tmp
+xxd -p /lib64/libhwcontrol.so.1 &gt; libhwcontrol.hex
+sed -i 's/1EFA803E00B8010000007520/1EFA803E00B8010000009090/g' libhwcontrol.hex
+xxd -r -p libhwcontrol.hex &gt; libhwcontrol_patch.so.1
+echo &quot;2C396: 9090&quot; | xxd -r - libhwcontrol_patch.so.1
+chmod 644 libhwcontrol_patch.so.1
+# 替换原文件
+cp /usr/lib/libhwcontrol.so.1 /usr/lib/libhwcontrol.so.1.bak
+mv libhwcontrol_patch.so.1 /usr/lib/libhwcontrol.so.1
+</code></pre>
+<hr>
+<h2 id="参考内容">参考内容</h2>
+<ol>
+<li><a href="https://xpenology.com/forum/topic/67961-use-nvmem2-hard-drives-as-storage-pools-in-synology/#comment-438877">https://xpenology.com/forum/topic/67961-use-nvmem2-hard-drives-as-storage-pools-in-synology/#comment-438877</a></li>
+</ol>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E6%96%87%E4%BB%B6%E4%BF%A1%E6%81%AF">文件信息</a></li>
+<li><a href="#%E7%BA%AF%E4%BA%AB%E7%89%88%E5%91%BD%E4%BB%A4">纯享版命令</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9">参考内容</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://www.jianyun.run/post/shi-yong-ai-fan-yi-ying-wen-epubgan-jue-zhen-bu-cuo/">
+              <h3 class="post-title">
+                试用AI翻译英文EPUB，感觉真不错
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '84c0d2776760d53c4984',
+    clientSecret: '0a4a31263e310dfcf6286402055b027a05d11553',
+    repo: 'jianyun8023',
+    owner: 'jianyun8023',
+    admin: ['jianyun8023'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://www.jianyun.run/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
